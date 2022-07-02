@@ -2,3 +2,4 @@ tests.py
 t.ipynb
 Autoencoder.ipynb
 __pycache__
+.ipynb_checkpoints
