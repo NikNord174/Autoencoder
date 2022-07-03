@@ -17,3 +17,5 @@ __pycache__/
 losses/__pycache__/
 models/__pycache__/
 
+# Experimetal results
+experimental_results.txt
