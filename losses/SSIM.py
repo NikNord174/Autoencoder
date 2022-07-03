@@ -1,11 +1,6 @@
 import torch
 
 
-def MSE(fake: torch.Tensor,
-        image: torch.Tensor) -> torch.Tensor:
-    return torch.mean((fake - image)**2)
-
-
 def SSIM(fake: torch.Tensor, real: torch.Tensor) -> torch.Tensor:
     k1: float = 0.01
     k2: float = 0.03

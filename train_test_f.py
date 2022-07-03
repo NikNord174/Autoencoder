@@ -15,6 +15,7 @@ def train(model: nn.Sequential,
           optimizer: torch.optim,
           device: torch.device,
           loss=criterion) -> None:
+    model.train()
     for images, _ in train_loader:
         images = images.to(constants.DEVICE)
         optimizer.zero_grad()

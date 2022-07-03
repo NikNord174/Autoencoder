@@ -4,13 +4,13 @@ from datetime import datetime
 import torch
 
 import constants
-from models import (Autoencoder, Autoencoder_ConvTranspose,
-                    Autoencoder_Upsampling)
+from models.Autoencoder_Initial import Autoencoder_Initial
+# from models.Autoencoder_ConvTranspose import Autoencoder_ConvTranspose
+# from models.Autoencoder_Upsampling import Autoencoder_Upsampling
 from train_test_f import criterion, train, test
-
 from data_import import train_loader, test_loader
 
-model = Autoencoder_Upsampling().to(constants.DEVICE)
+model = Autoencoder_Initial().to(constants.DEVICE)
 optimizer = torch.optim.Adam(model.parameters(), lr=constants.lr)
 scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min')
 
