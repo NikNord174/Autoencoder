@@ -8,6 +8,7 @@ venv/
 .vscode/
 
 # Tests files and folders
+tests/
 tests.py
 t.ipynb
 Autoencoder_old.ipynb
