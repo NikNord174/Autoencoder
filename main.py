@@ -1,66 +1,102 @@
-import os
+import logging
+from logging.handlers import RotatingFileHandler
 from time import time
 from datetime import datetime
 import torch
 
+import matplotlib.pyplot as plt
+import numpy as np
+from torchvision.utils import save_image
+
 import constants
 from models.Autoencoder_Initial import Autoencoder_Initial
-# from models.Autoencoder_ConvTranspose import Autoencoder_ConvTranspose
-# from models.Autoencoder_Upsampling import Autoencoder_Upsampling
+from models.Autoencoder_ConvTranspose import Autoencoder_ConvTranspose
+from models.Autoencoder_Upsampling import Autoencoder_Upsampling
 from train_test_f import criterion, train, test
 from data_import import train_loader, test_loader
 
-model = Autoencoder_Initial().to(constants.DEVICE)
+
+logging.basicConfig(
+    level=logging.INFO,
+    filename='results/Experiments.log',
+    filemode='a',
+    format='%(message)s'
+)
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+handler = RotatingFileHandler(
+    'results/Experiments_main.log',
+    mode='a', maxBytes=5*1024*1024,
+    backupCount=2)
+logger.addHandler(handler)
+formatter = logging.Formatter('%(message)s')
+handler.setFormatter(formatter)
+
+model = Autoencoder_Upsampling().to(constants.DEVICE)
 optimizer = torch.optim.Adam(model.parameters(), lr=constants.lr)
 scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min')
 
-t0 = time()
-test_loss_list = []
+
+def np_and_save(image, image_name):
+    image_cpu = image[0].detach().cpu()
+    save_image(image_cpu, f'results/{image_name}.jpeg')
+    image_np = image_cpu.numpy()
+    return np.transpose(image_np, (1, 2, 0))
 
 
-def results_recording():
-    parameters['epochs:'] = epoch + 1
-    parameters['losses:'] = test_loss_list
-    parameters['time:'] = '{:.2f}'.format(t1)
+def illustration(fig, no, image, title, fontsize=28):
+    ax = fig.add_subplot(1, 2, no)
+    ax.set_title(title, fontsize=fontsize)
+    ax.imshow(image)
+    plt.axis('off')
 
-    filename = 'experimental_results.txt'
-    if not os.path.exists(filename):
-        open(filename, 'a').close()
-    filehandler = open(filename, 'a')
-    for key, value in parameters.items():
-        filehandler.write('{} {}\n'.format(str(key), str(value)))
-    filehandler.write('-------------------------\n')
-    print('Finish!')
+
+def imshow(image, fake, image_name, fake_name):
+    image_np = np_and_save(image, image_name)
+    fake_np = np_and_save(fake, fake_name)
+    fig = plt.figure(figsize=(15, 10))
+    illustration(fig, 1, image_np, 'Real Image')
+    illustration(fig, 2, fake_np, 'Fake Image')
+    plt.show()
 
 
 if __name__ == '__main__':
     try:
         date = datetime.now()
-        comment = (
-            "Changed Upsample mode to 'nearest' and stop criterium to 1e-3"
-        )
-        parameters = {
-            'Experiment:': date.strftime('%m/%d/%Y, %H:%M:%S'),
-            'model': model.__class__.__name__,
-            'model detail:': model,
-            'loss function': criterion.__name__,
-            'Comments:': comment,
-        }
+        logger.info('Experiment: {}'.format(
+            date.strftime('%m/%d/%Y, %H:%M:%S')))
+        logger.info('Device: {}'.format(constants.DEVICE))
+        logger.info('Model: {}'.format(model.__class__.__name__))
+        logger.info('Model detail: {}'.format(model))
+        logger.info('Loss: {}'.format(str(criterion)))
+        logger.info('Batch size: {}'.format(constants.BATCH_SIZE))
+        logger.info('Learning rate: {}'.format(constants.lr))
+        comment = input('Comment: ')
+        logger.info('Comment: {}'.format(comment))
+        t0 = time()
+        test_loss_list = []
+        n = 0
         for epoch in range(constants.epochs):
             loss = 0.0
-            train(model, train_loader, optimizer, constants.DEVICE)
-            test_loss = test(model, test_loader, constants.DEVICE)
+            train(model, train_loader, optimizer)
+            test_loss = test(model, test_loader)
             test_loss_list.append(round(test_loss, 5))
             t1 = (time() - t0) / 60
-            print(
+            logger.info(
                 'Epoch: {}, test loss: {:.5f}, time: {:.2f} min'.format(
                     epoch+1, test_loss, t1))
-            if epoch > 2:
-                if (max(test_loss_list[-5:]) - min(test_loss_list[-5:])
-                        > constants.eps):
-                    continue
-                else:
-                    break
-        results_recording()
+            if test_loss <= min(test_loss_list):
+                n = 0
+                continue
+            n += 1
+            if n > 5:
+                break
     except KeyboardInterrupt:
-        results_recording()
+        raise KeyboardInterrupt('Learning has been stopped manually')
+    finally:
+        for image, _ in test_loader:
+            fake = model(image.to(constants.DEVICE))
+            imshow(image, fake, 'image', 'fake')
+            break
+        logger.info('----------------')

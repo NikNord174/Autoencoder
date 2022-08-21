@@ -9,13 +9,13 @@ transform = Compose([ToTensor(), Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 trainset = datasets.CIFAR10(
     '../data',
     train=True,
-    download=False,  # изменить при первом запуске
+    download=False,
     transform=transform
 )
 testset = datasets.CIFAR10(
     '../data',
     train=False,
-    download=False,  # изменить при первом запуске
+    download=False,
     transform=transform
 )
 train_loader = DataLoader(

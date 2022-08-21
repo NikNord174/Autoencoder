@@ -17,5 +17,11 @@ __pycache__/
 losses/__pycache__/
 models/__pycache__/
 
-# Experimetal results
-experimental_results.txt
+# log files
+losses/SSIM_randn.log
+losses/SSIM_real.log
+losses/SSIM.log
+
+
+# Other files
+results/

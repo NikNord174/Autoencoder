@@ -11,5 +11,5 @@ else:
     DEVICE = torch.device('cpu')
 epochs = 3
 running_loss = 0.0
-lr = 0.001
+lr = 0.0001
 eps = 1e-3

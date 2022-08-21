@@ -7,11 +7,11 @@ import torch.nn as nn
 class Autoencoder_Initial(nn.Module):
     def __init__(self):
         super(Autoencoder_Initial, self).__init__()
-        self.channels = [3, 60, 120, 240]
-        self.hidden_state = 300
+        self.channels = [3, 100, 200, 250, 300]
+        self.hidden_state = 1000
         self.encoder = self.encoder_layers()
         self.flatten = nn.Flatten()
-        self.lin_neurons = [240, 4, 4]
+        self.lin_neurons = [300, 2, 2]
         self.enc_neurons = np.prod(self.lin_neurons)
         self.linear = nn.Linear(self.enc_neurons,
                                 self.hidden_state)
@@ -22,7 +22,7 @@ class Autoencoder_Initial(nn.Module):
     def simple_enc_block(self,
                          input_channels: int = 3,
                          output_channels: int = 3,
-                         kernel_size: int = 4,
+                         kernel_size: int = 3,
                          stride: int = 2,
                          padding: int = 1,
                          final_layer: bool = False) -> nn.Sequential:

@@ -1,2 +1,6 @@
 torch==1.13.0.dev20220703
 numpy==1.23.0
+matplotlib==3.5.2
+pytorch_ignite==0.4.9
+torchmetrics==0.9.3
+torch_fidelity==0.3.0
