@@ -3,3 +3,4 @@ numpy==1.23.0
 matplotlib==3.5.2
 torchmetrics==0.9.3
 torch_fidelity==0.3.0
+torchsummary==1.4.5
