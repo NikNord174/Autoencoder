@@ -2,7 +2,7 @@
 Neural network to compress and decompress images.
 
 # Getting started
-The project was made using Python 3.7 and tensor library PyTorch. Other necessary packages are noticed in requirements.txt. Be aware, that in requirements.txt torch==1.13.0.dev20220703 is noticed. This version allows accelerating the learning process on Mac with Apple Silicon. However, it can cause some issues with other OS, so you may want to change it to stable version 1.12.
+The project was made using Python 3.10 and tensor library PyTorch. Other necessary packages are noticed in requirements.txt. Be aware, that in requirements.txt torch==1.13.0.dev20220703 is noticed. This version allows accelerating the learning process on Mac with Apple Silicon. However, it can cause some issues with other OS, so you may want to change it to stable version 1.12.
 
 First, clone the repository from Github and switch to the new directory:
 
