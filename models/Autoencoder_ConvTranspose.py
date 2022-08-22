@@ -1,4 +1,3 @@
-import torch
 import torch.nn as nn
 
 
@@ -83,9 +82,3 @@ class Autoencoder_ConvTranspose(nn.Module):
         encoded = self.encoder(x)
         decoded = self.decoder(encoded)
         return decoded
-
-
-if __name__ == '__main__':
-    images = torch.randn(64, 3, 32, 32)
-    model = Autoencoder_ConvTranspose()
-    print(model(images).size())

@@ -2,6 +2,7 @@ import torch.nn as nn
 
 
 class Autoencoder_Upsampling(nn.Module):
+    '''Dropout можно по началу убрать, пока нет переобучения'''
     def __init__(self):
         super(Autoencoder_Upsampling, self).__init__()
         self.channels = [3, 100, 200, 250, 300]
@@ -23,12 +24,14 @@ class Autoencoder_Upsampling(nn.Module):
             ),
             nn.BatchNorm2d(output_channels),
             nn.Dropout(p=0.2),
-            nn.LeakyReLU(0.5),
-            nn.MaxPool2d(maxpool_kernel),)
+            nn.LeakyReLU(0.02),
+            nn.MaxPool2d(maxpool_kernel),
+            )
 
     def encoder_layers(self) -> nn.Sequential:
         layers = []
         for i in range(len(self.channels)-1):
+            '''оптимизировать if/else, тк они одинаковы'''
             if self.channels[i] != self.channels[-2]:
                 layers.append(self.simple_enc_block(
                     input_channels=self.channels[i],
@@ -40,7 +43,10 @@ class Autoencoder_Upsampling(nn.Module):
                     output_channels=self.channels[i+1],
                     )
                 )
-        return nn.Sequential(*layers)
+        self.encoder = nn.Sequential(*layers)
+        # return nn.Sequential(*layers) # можно вместо return можно написать
+        # self.encoder = nn.Seq и потом вызвать его в forward
+        # и не объявлять в __init__
 
     def simple_dec_block(self,
                          input_channels: int = 3,
@@ -57,7 +63,7 @@ class Autoencoder_Upsampling(nn.Module):
             ),
             nn.BatchNorm2d(output_channels),
             nn.Dropout(p=0.2),
-            nn.LeakyReLU(0.5)
+            nn.LeakyReLU(0.02)
             )
 
     def decoder_layers(self) -> nn.Sequential:
@@ -74,7 +80,8 @@ class Autoencoder_Upsampling(nn.Module):
                     input_channels=dec_channels[i],
                     output_channels=dec_channels[i+1])
                 )
-        return nn.Sequential(*layers)
+        self.decoder = nn.Sequential(*layers)
+        # return nn.Sequential(*layers)
 
     def forward(self, x):
         encoded = self.encoder(x)

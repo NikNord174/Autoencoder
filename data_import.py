@@ -1,21 +1,26 @@
+import os
 from torch.utils.data import DataLoader
 from torchvision import datasets
-from torchvision.transforms import Compose, ToTensor, Normalize
+from torchvision.transforms import Compose, ToTensor
 
 import constants
 
 
-transform = Compose([ToTensor(), Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+DOWNLOAD = False
+if not os.path.exists('data/cifar-10-python.tar.gz'):
+    DOWNLOAD = True
+
+transform = Compose([ToTensor()])
 trainset = datasets.CIFAR10(
     '../data',
     train=True,
-    download=False,
+    download=DOWNLOAD,
     transform=transform
 )
 testset = datasets.CIFAR10(
     '../data',
     train=False,
-    download=False,
+    download=DOWNLOAD,
     transform=transform
 )
 train_loader = DataLoader(
@@ -28,5 +33,9 @@ test_loader = DataLoader(
     testset,
     batch_size=constants.BATCH_SIZE,
     num_workers=constants.NUM_WORKERS,
-    shuffle=True
+    shuffle=False
 )
+
+if __name__ == '__main__':
+    print(len(test_loader))
+    print(len(testset))

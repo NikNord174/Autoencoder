@@ -26,4 +26,5 @@ losses/SSIM.log
 
 
 # Other files
+data/
 results/

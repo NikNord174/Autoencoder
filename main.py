@@ -7,12 +7,14 @@ import torch
 import matplotlib.pyplot as plt
 import numpy as np
 from torchvision.utils import save_image
+from torchsummary import summary
 
 import constants
+import train_test_f
 from models.Autoencoder_Initial import Autoencoder_Initial
 from models.Autoencoder_ConvTranspose import Autoencoder_ConvTranspose
 from models.Autoencoder_Upsampling import Autoencoder_Upsampling
-from train_test_f import criterion, train, test
+from train_test_f import loss, train, test
 from data_import import train_loader, test_loader
 
 
@@ -33,7 +35,17 @@ logger.addHandler(handler)
 formatter = logging.Formatter('%(message)s')
 handler.setFormatter(formatter)
 
-model = Autoencoder_Upsampling().to(constants.DEVICE)
+NO_PROGRESS_EPOCHS = 5
+
+
+MODELS = {
+    'Initial': Autoencoder_Initial(),
+    'ConvTranspose': Autoencoder_ConvTranspose(),
+    'Upsampling': Autoencoder_Upsampling()
+}
+
+model_name = 'Upsampling'
+model = MODELS.get(model_name)
 optimizer = torch.optim.Adam(model.parameters(), lr=constants.lr)
 scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min')
 
@@ -67,9 +79,10 @@ if __name__ == '__main__':
         logger.info('Experiment: {}'.format(
             date.strftime('%m/%d/%Y, %H:%M:%S')))
         logger.info('Device: {}'.format(constants.DEVICE))
-        logger.info('Model: {}'.format(model.__class__.__name__))
-        logger.info('Model detail: {}'.format(model))
-        logger.info('Loss: {}'.format(str(criterion)))
+        logger.info('Model: {}'.format(model_name))
+        logger.info('Model summury: {}'.format(summary(model, (3, 32, 32))))
+        logger.info('Model detail: {}'.format(model.__repr__()))
+        logger.info('Loss: {}'.format(train_test_f.METRICS.get(loss)))
         logger.info('Batch size: {}'.format(constants.BATCH_SIZE))
         logger.info('Learning rate: {}'.format(constants.lr))
         comment = input('Comment: ')
@@ -77,6 +90,7 @@ if __name__ == '__main__':
         t0 = time()
         test_loss_list = []
         n = 0
+        model = model.to(constants.DEVICE)
         for epoch in range(constants.epochs):
             loss = 0.0
             train(model, train_loader, optimizer)
@@ -86,11 +100,13 @@ if __name__ == '__main__':
             logger.info(
                 'Epoch: {}, test loss: {:.5f}, time: {:.2f} min'.format(
                     epoch+1, test_loss, t1))
+            print('Epoch: {}, test loss: {:.5f}, time: {:.2f} min'.format(
+                    epoch+1, test_loss, t1))
             if test_loss <= min(test_loss_list):
                 n = 0
                 continue
             n += 1
-            if n > 5:
+            if n > NO_PROGRESS_EPOCHS:
                 break
     except KeyboardInterrupt:
         raise KeyboardInterrupt('Learning has been stopped manually')
