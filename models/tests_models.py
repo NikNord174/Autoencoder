@@ -1,6 +1,7 @@
 import logging
 import unittest
 import torch
+from torchsummary import summary
 
 from Autoencoder_Upsampling import Autoencoder_Upsampling
 from Autoencoder_ConvTranspose import Autoencoder_ConvTranspose
@@ -45,6 +46,7 @@ class Tests_Models(unittest.TestCase):
             model = model()
             encoder = model.encoder_layers()
             outputs_shape = encoder(self.images).shape
+            print(summary(model, (3, 32, 32)))
             self.assertEqual(
                 outputs_shape, ground_shape,
                 'Encoder of model {} gives wrong vector'.format(

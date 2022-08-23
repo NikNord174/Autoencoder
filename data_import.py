@@ -12,13 +12,13 @@ if not os.path.exists('data/cifar-10-python.tar.gz'):
 
 transform = Compose([ToTensor()])
 trainset = datasets.CIFAR10(
-    '../data',
+    'data',
     train=True,
     download=DOWNLOAD,
     transform=transform
 )
 testset = datasets.CIFAR10(
-    '../data',
+    'data',
     train=False,
     download=DOWNLOAD,
     transform=transform
@@ -35,7 +35,3 @@ test_loader = DataLoader(
     num_workers=constants.NUM_WORKERS,
     shuffle=False
 )
-
-if __name__ == '__main__':
-    print(len(test_loader))
-    print(len(testset))
