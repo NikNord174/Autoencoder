@@ -1,7 +1,8 @@
 import os
 from torch.utils.data import DataLoader
 from torchvision import datasets
-from torchvision.transforms import Compose, ToTensor
+from torchvision.transforms import (
+    Compose, ToTensor, RandomHorizontalFlip, ColorJitter)
 
 import constants
 
@@ -10,7 +11,10 @@ DOWNLOAD = False
 if not os.path.exists('data/cifar-10-python.tar.gz'):
     DOWNLOAD = True
 
-transform = Compose([ToTensor()])
+transform = Compose([
+    RandomHorizontalFlip(p=0.5),
+    ColorJitter(brightness=.5),
+    ToTensor()])
 trainset = datasets.CIFAR10(
     'data',
     train=True,

@@ -6,7 +6,7 @@ import constants
 class Autoencoder_Upsampling(nn.Module):
     def __init__(self):
         super(Autoencoder_Upsampling, self).__init__()
-        self.channels = [3, 100, 200, 400]
+        self.channels = [3, 100, 200, 500]
         self.encoder = self.encoder_layers()
         self.decoder = self.decoder_layers()
 
@@ -25,7 +25,7 @@ class Autoencoder_Upsampling(nn.Module):
             ),
             nn.BatchNorm2d(output_channels),
             # nn.Dropout(p=0.2),
-            nn.LeakyReLU(0.02),
+            nn.LeakyReLU(constants.ReLU_FACTOR),
             nn.MaxPool2d(maxpool_kernel),
             )
 
@@ -52,7 +52,7 @@ class Autoencoder_Upsampling(nn.Module):
                          output_channels: int = 3,
                          kernel_size: int = 1,
                          scale_factor: int = 2,
-                         mode: str = constants.MODE) -> nn.Sequential:
+                         mode: str = constants.POOL_MODE) -> nn.Sequential:
         return nn.Sequential(
             nn.Upsample(scale_factor=scale_factor, mode=mode),
             nn.Conv2d(
@@ -62,7 +62,7 @@ class Autoencoder_Upsampling(nn.Module):
             ),
             nn.BatchNorm2d(output_channels),
             # nn.Dropout(p=0.2),
-            nn.LeakyReLU(0.02)
+            nn.LeakyReLU(constants.ReLU_FACTOR)
             )
 
     def decoder_layers(self) -> nn.Sequential:
@@ -81,8 +81,8 @@ class Autoencoder_Upsampling(nn.Module):
                 )
                 layers.append(
                     nn.Sequential(
-                        nn.Upsample(scale_factor=2, mode=constants.MODE),
-                        nn.LeakyReLU(0.02)))
+                        nn.Upsample(scale_factor=2, mode=constants.POOL_MODE),
+                        nn.Sigmoid()))
         return nn.Sequential(*layers)
 
     def forward(self, x):
