@@ -4,7 +4,7 @@ import torch.nn as nn
 class Autoencoder_ConvTranspose(nn.Module):
     def __init__(self):
         super(Autoencoder_ConvTranspose, self).__init__()
-        self.channels = [3, 100, 200, 250, 300]
+        self.channels = [3, 100, 200, 250, 400]
         self.encoder = self.encoder_layers()
         self.decoder = self.decoder_layers()
 

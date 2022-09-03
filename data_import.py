@@ -12,8 +12,8 @@ if not os.path.exists('data/cifar-10-python.tar.gz'):
     DOWNLOAD = True
 
 transform = Compose([
-    RandomHorizontalFlip(p=0.5),
-    ColorJitter(brightness=.5),
+    # RandomHorizontalFlip(p=0.5),
+    # ColorJitter(brightness=.5),
     ToTensor()])
 trainset = datasets.CIFAR10(
     'data',

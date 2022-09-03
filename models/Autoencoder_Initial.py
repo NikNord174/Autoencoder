@@ -7,7 +7,7 @@ import torch.nn as nn
 class Autoencoder_Initial(nn.Module):
     def __init__(self):
         super(Autoencoder_Initial, self).__init__()
-        self.channels = [3, 100, 200, 250, 300]
+        self.channels = [3, 100, 200, 250, 400]
         self.hidden_state = 1000
         self.encoder = self.encoder_layers()
         self.flatten = nn.Flatten()

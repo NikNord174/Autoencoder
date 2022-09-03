@@ -1,11 +1,11 @@
 import logging
 import unittest
 import torch
-from torchsummary import summary
 
 from Autoencoder_Upsampling import Autoencoder_Upsampling
 from Autoencoder_ConvTranspose import Autoencoder_ConvTranspose
 from Autoencoder_Initial import Autoencoder_Initial
+from subpixel_conv import Subpixel_Conv
 
 
 logger = logging.getLogger(__name__)
@@ -17,6 +17,7 @@ class Tests_Models(unittest.TestCase):
     def setUpClass(cls):
         cls.images = torch.randn([64, 3, 32, 32])
         cls.models = [
+            Subpixel_Conv,
             Autoencoder_Upsampling,
             Autoencoder_ConvTranspose,
             Autoencoder_Initial,
@@ -41,12 +42,11 @@ class Tests_Models(unittest.TestCase):
 
     def test_encoder_output(self):
         "Test how encoders work"
-        ground_shape = torch.Size([64, 300, 2, 2])
+        ground_shape = torch.Size([64, 400, 2, 2])
         for model in self.models:
             model = model()
             encoder = model.encoder_layers()
             outputs_shape = encoder(self.images).shape
-            print(summary(model, (3, 32, 32)))
             self.assertEqual(
                 outputs_shape, ground_shape,
                 'Encoder of model {} gives wrong vector'.format(
